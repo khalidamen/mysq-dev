@@ -1,21 +1,23 @@
----
+--
 - hosts: all
   sudo: true
   tasks:
+  - name: GetWebtatic
+    get_url: url=https://mirror.webtatic.com/yum/el7/webtatic-release.rpm dest=/root/ validate_certs=no
+  - name: Webtatic repo
+    yum: name=/root/webtatic-release.rpm state=present
   - name: Install various packages
-    yum: name=zlib,libmemcached,libmemcached-devel,zlib-devel,memcached,bzip2-devel,openssl-devel,ncurses-devel,jwhois,cyrus-sasl-devel,libyaml-devel,vim,ntp,java,openssh,libssh2,openssh-clients,openssh-askpass,openssh-server state=present  
-  - name: install apache
-    yum: name=apache2 state=present
-  - name: install php7 and httpd
-    yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present  
+    yum: name=zlib,libmemcached,libmemcached-devel,zlib-devel,memcached,bzip2-devel,openssl-devel,ncurses-devel,jwhois,cyrus-sasl-devel,libyaml-devel,vim,ntp,java,openssh,libssh2,openssh-clients,openssh-askpass,openssh-server state=present
   - name: RepoPercona
     yum_repository:
             name: percona
             description: Percona YUM
             baseurl: http://repo.percona.com/release/$releasever/RPMS/$basearch
-            gpgcheck: no  
+            gpgcheck: no
   - name: install php7 and httpd
     yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present
+  - name: Remove Percona-Server-shared-56
+    yum: name=Percona-Server-shared-56 state=absent
   - name: Install Percona server
     yum: name=Percona-Server-server-57 state=present validate_certs=yes update_cache=yes
   - selinux:
@@ -30,9 +32,9 @@
     file:
      path: /usr/local/bin/composer
      mode: a+x
-     state: file                
+     state: file
 
   - service:
-         name: httpd 
+         name: httpd
          state: reloaded
 #      - service: name=httpd state= reloaded
