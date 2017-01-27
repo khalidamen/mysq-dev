@@ -1,0 +1,40 @@
+---
+- hosts: all
+  sudo: true
+  tasks:
+  - name: Install various packages
+    yum: name=zlib,libmemcached,libmemcached-devel,zlib-devel,memcached,bzip2-devel,openssl-devel,ncurses-devel,jwhois,cyrus-sasl-devel,libyaml-devel,vim,ntp,java,openssh,libssh2,openssh-clients,openssh-askpass,openssh-server state=present  
+  - name: update yum cache
+    yum: update  
+  - name: install apache
+    yum: name=apache2 state=present
+  - name: install php7 and httpd
+    yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present  
+  - name: RepoPercona
+        yum_repository:
+            name: percona
+            description: Percona YUM
+            baseurl: http://repo.percona.com/release/$releasever/RPMS/$basearch
+            gpgcheck: no  
+  - name: install php7 and httpd
+        yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present
+  - name: Install Percona server
+    yum: name=Percona-Server-server-57 state=present validate_certs=yes update_cache=yes
+  - selinux:
+     state: disabled
+  - name: install composer/download first
+    get_url: url=https://getcomposer.org/installer dest=/tmp/installer validate_certs=no
+  - name: install composer
+    shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin
+  - name: rename composer.phar to composer
+    shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+  - name: make composer executable
+    file:
+     path: /usr/local/bin/composer
+     mode: a+x
+     state: file                
+
+  - service:
+         name: httpd 
+         state: reloaded
+#      - service: name=httpd state= reloaded
