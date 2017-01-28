@@ -14,12 +14,10 @@
             description: Percona YUM
             baseurl: http://repo.percona.com/release/$releasever/RPMS/$basearch
             gpgcheck: no
-  - name: install php7 and httpd
-    yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present
-  - name: Remove Percona-Server-shared-56
-    yum: name=Percona-Server-shared-56 state=absent
   - name: Install Percona server
     yum: name=Percona-Server-server-57 state=present validate_certs=yes update_cache=yes
+  - name: install php7 and httpd
+    yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present  
   - selinux:
      state: disabled
   - name: install composer/download first
