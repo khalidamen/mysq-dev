@@ -50,18 +50,18 @@
             state=present
   - name: initialize MySQL data directoris in non secure mode
     shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=c  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
-    shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d1 --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
-    shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d2  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
-    shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d3  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
-    shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d4  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
-    shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d5  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d1 --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d2  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d3  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d4  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d5  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1;
   - name: Start mysql instances
-    systemd:  name=mysqld@c enabled=yes state=started
-    systemd:  name=mysqld@d1  enabled=yes  state=started
-    systemd:  name=mysqld@d2  enabled=yes state=started
-    systemd:  name=mysqld@d3  enabled=yes state=started
-    systemd:  name=mysqld@d4  enabled=yes state=started
-    systemd:  name=mysqld@d5  enabled=yes state=started
+    systemd:  name=mysqld@c  enabled=yes state=started
+  - systemd:  name=mysqld@d1 enabled=yes state=started
+  - systemd:  name=mysqld@d2 enabled=yes state=started
+  - systemd:  name=mysqld@d3 enabled=yes state=started
+  - systemd:  name=mysqld@d4 enabled=yes state=started
+  - systemd:  name=mysqld@d5 enabled=yes state=started
 
 
 
