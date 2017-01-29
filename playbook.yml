@@ -20,17 +20,73 @@
     yum: name=php70w,php70w-opcache,php70w-mysql,php70w-pdo,php70w-devel,php70w-pear,httpd,php70w-ldap,php70w-mbstring state=present  
   - selinux:
      state: disabled
-  - name: install composer/download first
-    get_url: url=https://getcomposer.org/installer dest=/tmp/installer validate_certs=no
-  - name: install composer
-    shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin
-  - name: rename composer.phar to composer
-    shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
-  - name: make composer executable
-    file:
-     path: /usr/local/bin/composer
-     mode: a+x
-     state: file
+  - name: delete default mysql config file   
+    file: path=/etc/percona.conf.d/mysqld.cnf state=absent
+  - name: Creates directory
+    file: 
+      path: /mnt/mysql 
+      owner: mysql
+      group: mysql
+      mode: rwxr-xr-x
+      state: directory
+  - file:
+           path=/etc/my.cnf
+           state=absent
+  - file:
+       path=/etc/my.cnf
+       state=touch
+       owner=root
+       mode=0755
+  - name: Create my.cnf containing three instances
+    lineinfile: dest=/etc/my.cnf
+            regexp='^'
+            line='[mysqld@c] \n user    = mysql \n pid-file = =/var/run/mysqld/mysqld.pid \n socket   = /var/lib/mysql/mysqld.sock \n log-error = /var/log/mysqldc.log \n port    = 3306 \n datadir   = /mnt/mysql/c \n [mysqld@d1] \n user   = mysql \n pid-file = /var/run/mysqld/mysqld1.pid \n socket   = /var/lib/mysql/mysqld1.sock \n log-error  = /var/log/mysqldd1.log \n port   = 14001 \n datadir    = /mnt/mysql/d1 \n [mysqld@d2] \n user    = mysql \n pid-file = /var/run/mysqld/mysqld2.pid \n socket   = /var/lib/mysql/mysqld2.sock \n log-error  = /var/log/mysqldd2.log \n port   = 14002 \n datadir    = /mnt/mysql/d2 \n  \n [mysqld@d3] \n user    = mysql \n pid-file = /var/run/mysqld/mysqld3.pid \n socket   = /var/lib/mysql/mysqld3.sock \n log-error  = /var/log/mysqldd2.log \n port   = 14002 \n datadir    = /mnt/mysql/d3 \n  \n  \n [mysqld@d4] \n user    = mysql \n pid-file = /var/run/mysqld/mysqld4.pid \n socket   = /var/lib/mysql/mysqld4.sock \n log-error  = /var/log/mysqldd2.log \n port   = 14002 \n datadir    = /mnt/mysql/d4 \n  \n [mysqld@d5] \n user    = mysql \n pid-file = /var/run/mysqld/mysqld5.pid \n socket   = /var/lib/mysql/mysqld5.sock \n log-error  = /var/log/mysqldd2.log \n port   = 14002 \n datadir    = /mnt/mysql/d5 \n'
+            state=present
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=c  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1; 
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d1 --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1; 
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d2  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1; 
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d3  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1; 
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d4  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1; 
+  - shell: mysqld --no-defaults --basedir=/mnt/mysql --user=mysql --datadir=d5  --initialize-insecure --skip-ssl --explicit-defaults-for-timestamp --log-error-verbosity=1; 
+  - name: Start mysql c
+    service:  name=mysqld@c state=enabled
+  - name: Start mysqld d1
+    service:  name=mysqld@d1 state=enabled
+  - name: Start mysql d2
+    service:  name=mysqld@d2 state=enabled
+  - name: Start mysql d3
+    service:  name=mysqld@d3 state=enabled
+  - name: Start mysql d4
+    service:  name=mysqld@d4 state=enabled
+  - name: Start mysql d5
+    service:  name=mysqld@d5 state=enabled
+  - name: Start mysql c
+    service:  name=mysqld@c state=started
+  - name: Start mysqld d1
+    service:  name=mysqld@d1 state=started
+  - name: Start mysql d2
+    service:  name=mysqld@d2 state=started
+  - name: Start mysql d3
+    service:  name=mysqld@d3 state=started
+  - name: Start mysql d4
+    service:  name=mysqld@d4 state=started
+  - name: Start mysql d5
+    service:  name=mysqld@d5 state=started
+
+
+
+
+#  - name: install composer/download first
+#    get_url: url=https://getcomposer.org/installer dest=/tmp/installer validate_certs=no
+#  - name: install composer
+#    shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin
+#  - name: rename composer.phar to composer
+#    shell: mv /usr/local/bin/composer.phar /usr/local/bin/composer
+#  - name: make composer executable
+#    file:
+#     path: /usr/local/bin/composer
+#     mode: a+x
+#     state: file
 
   - service:
          name: httpd
